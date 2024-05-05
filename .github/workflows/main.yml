@@ -1,0 +1,38 @@
+name: Flask on Minikube CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+      - name: Start Minikube
+        run: minikube start --memory=4096 --cpus=2 --kubernetes-version=v1.22.0
+
+      - name: Build Docker image
+        run: docker build -t hello-flask .
+
+      - name: Deploy Application
+        run: |
+          kubectl create deployment hello-flask --image=hello-flask:latest
+          kubectl expose deployment hello-flask --type=NodePort --port=5000
+
+      - name: Test Application
+        run: |
+          # Run tests against the deployed application
+          echo "Testing application..."
+
+      - name: Stop Minikube
+        run: minikube stop
