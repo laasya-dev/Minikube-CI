@@ -31,7 +31,6 @@ jobs:
 
       - name: Test Application
         run: |
-          # Run tests against the deployed application
           echo "Testing application..."
 
       - name: Stop Minikube
